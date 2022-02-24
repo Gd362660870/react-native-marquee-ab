@@ -151,7 +151,7 @@ export default class MarqueeHorizontal extends Component {
         return(
             <View style = {{
                 ...styles.textMeasuringViewStyle,
-                width : list.length * 1024
+                width : list.length * 20000,//这里有bug
             }}>
                 <Text style = {{
                     ...styles.textMeasuringTextStyle,
