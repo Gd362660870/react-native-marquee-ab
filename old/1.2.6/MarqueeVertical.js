@@ -1,16 +1,23 @@
 import React, { Component } from 'react';
-import { View, Animated, Easing, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Animated, Easing, Text, TouchableOpacity, InteractionManager } from 'react-native';
 
-export const deviceWidth = Dimensions.get('window').width;
-export const MarqueeType = {
-    Simple : 'simple', //最简单的滚动
-    Multiple : 'multiple', //多列
-    MultipleRoll : 'multiple_roll', //多列连续滚动
-}
-export const Direction = {
-    Up : 'up',
-    Down : 'down',
-}
+const styles = {
+    bgContainerStyle : {
+        justifyContent : 'flex-start',
+        backgroundColor : '#FFFFFF',
+        overflow : 'hidden'
+    },
+    viewStyle : {
+        flexDirection : 'row',
+        justifyContent : 'flex-start',
+        alignItems : 'center'
+    },
+    textStyle : {
+        flex : 1,
+        fontSize : 16,
+        color : '#000000'
+    }
+};
 
 export default class MarqueeVertical extends Component {
     constructor(props) {
@@ -32,7 +39,7 @@ export default class MarqueeVertical extends Component {
         width : 375,
         height : 50,
         delay : 1200,
-        direction : Direction.Up,
+        direction : 'up',
         numberOfLines : 1,
         onTextClick : () => {},
     }
@@ -49,21 +56,21 @@ export default class MarqueeVertical extends Component {
         this.setState({
             maxIndex : textList.length + 2,
             textIndex : textList.length,
-            index : direction == Direction.Down ? textList.length : 1,
+            index : direction == 'down' ? textList.length : 1,
         })
     }
 
     componentWillReceiveProps(nextProps){
         let newText = nextProps.textList || [];
         let oldText = this.props.textList || [];
-        let newDirection = nextProps.direction || Direction.Up;
+        let newDirection = nextProps.direction || 'up';
         if (newText !== oldText) {
             this.state.animation && this.state.animation.stop();
             this.setState({
                 textList : newText,
                 maxIndex : newText.length + 2,
                 textIndex : newText.length,
-                index : newDirection == Direction.Down ? newText.length : 1,
+                index : newDirection == 'down' ? newText.length : 1,
                 animation: null,
             });
         }
@@ -76,7 +83,7 @@ export default class MarqueeVertical extends Component {
             let myIndex = 0;
             let yValue = 0;
             let yToValue = 0;
-            if(direction == Direction.Down){
+            if(direction == 'down'){
                 myIndex = index;
                 yValue = myIndex * height;
                 yToValue = 0;
@@ -92,7 +99,7 @@ export default class MarqueeVertical extends Component {
                         index : textIndex-1,
                     })
                 }
-            }else if(direction == Direction.Up){
+            }else if(direction == 'up'){
                 myIndex = index+1;
                 yValue = (myIndex - 1) * height;
                 yToValue = 0;
@@ -198,21 +205,3 @@ export default class MarqueeVertical extends Component {
         )
     }
 }
-
-const styles = StyleSheet.create({
-    bgContainerStyle : {
-        justifyContent : 'flex-start',
-        backgroundColor : '#FFFFFF',
-        overflow : 'hidden'
-    },
-    viewStyle : {
-        flexDirection : 'row',
-        justifyContent : 'flex-start',
-        alignItems : 'center'
-    },
-    textStyle : {
-        flex : 1,
-        fontSize : 16,
-        color : '#000000'
-    }
-});
