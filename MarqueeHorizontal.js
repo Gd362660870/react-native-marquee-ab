@@ -2,23 +2,23 @@ import React, { Component } from 'react';
 import { View, Animated, Easing, Text, TouchableOpacity, InteractionManager } from 'react-native';
 
 const styles = {
-    bgContainerStyle : {
-        flexDirection : 'row',
-        alignItems : 'center',
-        justifyContent : 'flex-start',
-        backgroundColor : '#FFFFFF',
-        overflow : 'hidden'
+    bgContainerStyle: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        backgroundColor: '#FFFFFF',
+        overflow: 'hidden'
     },
     textMeasuringViewStyle: {
-        flexDirection : 'row',
-        opacity : 0,
+        flexDirection: 'row',
+        opacity: 0,
     },
     textMeasuringTextStyle: {
-        fontSize : 16,
+        fontSize: 16,
     },
-    textStyle : {
-        fontSize : 16,
-        color : '#000000',
+    textStyle: {
+        fontSize: 16,
+        color: '#000000',
     }
 };
 
@@ -26,48 +26,48 @@ export default class MarqueeHorizontal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            animation : null,
-            textList : [],
-            textWidth : 0,
-            viewWidth : 0,
+            animation: null,
+            textList: [],
+            textWidth: 0,
+            viewWidth: 0,
         }
     }
 
     static defaultProps = {
-        duration : 10000, 
-        speed : 0,
-        textList : [],
-        width : 375,
-        height : 50,
-        direction : 'left',
-        reverse : false,
-        separator : 20,
-        onTextClick : () => {},
+        duration: 10000,
+        speed: 0,
+        textList: [],
+        width: 375,
+        height: 50,
+        direction: 'left',
+        reverse: false,
+        separator: 20,
+        onTextClick: () => { },
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.setState({
-            textList : this.props.textList || [],
+            textList: this.props.textList || [],
         })
         this.animatedTransformX = new Animated.Value(0);
     }
 
-    componentDidUpdate(){
+    componentDidUpdate() {
         let { textWidth, viewWidth } = this.state;
         let { duration, speed, width, direction } = this.props;
         let mDuration = duration;
-        if(speed && speed > 0){
+        if (speed && speed > 0) {
             mDuration = (width + textWidth) / speed * 1000;
         }
-        if(!this.state.animation && textWidth && viewWidth){
+        if (!this.state.animation && textWidth && viewWidth) {
             this.animatedTransformX.setValue(direction == 'left' ? width : (direction == 'right' ? -textWidth : width));
             this.setState({
-                animation : Animated.timing(this.animatedTransformX, {
-                        toValue: direction == 'left' ? -textWidth : (direction == 'right' ? width : -textWidth),
-                        duration: mDuration,
-                        useNativeDriver: true,
-                        easing: Easing.linear,
-                    }),
+                animation: Animated.timing(this.animatedTransformX, {
+                    toValue: direction == 'left' ? -textWidth : (direction == 'right' ? width : -textWidth),
+                    duration: mDuration,
+                    useNativeDriver: true,
+                    easing: Easing.linear,
+                }),
             }, () => {
                 this.state.animation && this.state.animation.start(() => {
                     this.setState({
@@ -78,19 +78,19 @@ export default class MarqueeHorizontal extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps(nextProps) {
         let newText = nextProps.textList || [];
         let oldText = this.props.textList || [];
-        if (newText !== oldText) {
-        this.state.animation && this.state.animation.stop();
-        this.setState({
-            textList : newText,
-            animation: null,
-        });
+        if (JSON.stringify(newText) !== JSON.stringify(oldText)) {
+            this.state.animation && this.state.animation.stop();
+            this.setState({
+                textList: newText,
+                animation: null,
+            });
         }
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.state.animation && this.state.animation.stop();
     }
 
@@ -98,43 +98,43 @@ export default class MarqueeHorizontal extends Component {
         let width = e.nativeEvent.layout.width;
         let { textList, separator } = this.props;
         this.setState({
-            textWidth : width + ((textList.length - 1) * separator),
+            textWidth: width + ((textList.length - 1) * separator),
         })
     }
 
     viewOnLayout = (e) => {
         let width = e.nativeEvent.layout.width;
         this.setState({
-            viewWidth : width,
+            viewWidth: width,
         })
     }
 
-    textView(list){
+    textView(list) {
         let { textStyle, onTextClick, reverse, separator } = this.props;
         let itemView = [];
-        for(let i = 0;i<list.length;i++){
+        for (let i = 0; i < list.length; i++) {
             let item = list[i];
-            if(reverse){
+            if (reverse) {
                 item.value = item.value.split("").reverse().join("");
             }
             itemView.push(
-                <TouchableOpacity key = {''+i} activeOpacity = {0.9} onPress = {() => {
+                <TouchableOpacity key={'' + i} activeOpacity={0.9} onPress={() => {
                     onTextClick(item)
                 }}>
-                <View style = {{flexDirection : 'row',marginRight : i < list.length - 1 ? separator : 0}}>
-                    <Text style = {{
-                        ...styles.textStyle,
-                        ...textStyle
-                    }}
-                        numberOfLines = {1}
-                    >{item.value}</Text>
-                </View>
+                    <View style={{ flexDirection: 'row', marginRight: i < list.length - 1 ? separator : 0 }}>
+                        <Text style={{
+                            ...styles.textStyle,
+                            ...textStyle
+                        }}
+                            numberOfLines={1}
+                        >{item.value}</Text>
+                    </View>
                 </TouchableOpacity>
             );
         }
-        return(
+        return (
             <Animated.View
-                style = {{flexDirection : 'row',width : this.state.textWidth,transform: [{ translateX: this.animatedTransformX }]}}
+                style={{ flexDirection: 'row', width: this.state.textWidth, transform: [{ translateX: this.animatedTransformX }] }}
                 onLayout={(event) => this.viewOnLayout(event)}
             >
                 {itemView}
@@ -142,40 +142,40 @@ export default class MarqueeHorizontal extends Component {
         )
     }
 
-    textLengthView(list){
+    textLengthView(list) {
         let { textStyle } = this.props;
         let text = '';
-        for(let i = 0;i<list.length;i++){
+        for (let i = 0; i < list.length; i++) {
             text += list[i].value;
         }
-        return(
-            <View style = {{
+        return (
+            <View style={{
                 ...styles.textMeasuringViewStyle,
-                width : list.length * 20000,//这里有bug
+                width: list.length * 20000,//这里有bug
             }}>
-                <Text style = {{
+                <Text style={{
                     ...styles.textMeasuringTextStyle,
                     ...textStyle
                 }}
                     onLayout={(event) => this.textOnLayout(event)}
-                    numberOfLines = {1}
+                    numberOfLines={1}
                 >{text}</Text>
             </View>
         )
     }
 
-    render(){
+    render() {
         let { width, height, bgContainerStyle } = this.props;
         let { textList } = this.state;
-        return(
-            <View style = {{
+        return (
+            <View style={{
                 ...styles.bgContainerStyle,
-                width : width,
-                height : height,
+                width: width,
+                height: height,
                 ...bgContainerStyle,
-            }} opacity = {this.state.animation ? 1 : 0}>
-                { this.textView(textList) }
-                { this.textLengthView(textList) }
+            }} opacity={this.state.animation ? 1 : 0}>
+                {this.textView(textList)}
+                {this.textLengthView(textList)}
             </View>
         )
     }
